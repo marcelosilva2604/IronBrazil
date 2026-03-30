@@ -15,3 +15,8 @@ __pycache__/
 
 # Models (large)
 deploy/*.joblib
+
+# Internal docs (not for public)
+CLAUDE.md
+RESULTADOS_COMPLETOS.md
+RESULTADOS_PARCIAIS.md
