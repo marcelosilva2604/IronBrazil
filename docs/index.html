@@ -55,7 +55,7 @@
         <div class="card">
             <h2>Dados da Crianca</h2>
             <div class="form-grid">
-                <div class="form-group"><label>Idade (meses) *6-18</label><input type="number" id="age_months" min="6" max="18" step="1" value="9" required></div>
+                <div class="form-group"><label>Idade (meses) *6-18</label><input type="number" id="age_months" min="6" max="18" step="1" value="9" required oninput="if(this.value<6||this.value>18){this.style.borderColor='red'}else{this.style.borderColor='#27ae60'}"></div>
                 <div class="form-group"><label>Sexo</label><select id="male"><option value="1">Masculino</option><option value="0">Feminino</option></select></div>
                 <div class="form-group"><label>Peso ao nascer (g) *500-5500</label><input type="number" id="birth_weight" min="500" max="5500" step="10" value="3200" required></div>
                 <div class="form-group"><label>Idade gestacional (sem) *24-43</label><input type="number" id="gest_weeks" min="24" max="43" step="1" value="39" required></div>
@@ -153,7 +153,7 @@
             const pn = parseFloat(document.getElementById('prenatal_visits').value);
             const ma = parseFloat(document.getElementById('maternal_age').value);
 
-            if (isNaN(age) || age < 6 || age > 18) errors.push('Idade deve ser entre 6 e 18 meses (faixa do modelo)');
+            if (isNaN(age) || age < 6 || age > 18 || !Number.isInteger(age)) errors.push('Idade deve ser um numero inteiro entre 6 e 18 meses. Este modelo foi treinado apenas para criancas de 6 a 18 meses.');
             if (isNaN(bw) || bw < 500 || bw > 5500) errors.push('Peso ao nascer deve ser entre 500g e 5500g');
             if (isNaN(gw) || gw < 24 || gw > 43) errors.push('Idade gestacional deve ser entre 24 e 43 semanas');
             if (isNaN(pn) || pn < 0 || pn > 20) errors.push('Consultas pre-natal deve ser entre 0 e 20');
