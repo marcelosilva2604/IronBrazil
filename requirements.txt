@@ -1,0 +1,28 @@
+# Core data
+pandas>=2.2,<3
+numpy>=1.26,<2
+
+# Statistics & survey-weighted regression
+statsmodels>=0.14,<1
+scipy>=1.12,<2
+patsy>=0.5,<1
+
+# Propensity score & causal inference
+causalinference>=0.1.3
+
+# Visualization
+matplotlib>=3.8,<4
+seaborn>=0.13,<1
+
+# Tables
+tableone>=0.9
+
+# Multiple testing correction
+statsmodels  # multipletests already in statsmodels.stats
+
+# Excel dictionary support
+openpyxl>=3.1
+
+# Jupyter
+jupyter>=1.0
+ipykernel>=6.29

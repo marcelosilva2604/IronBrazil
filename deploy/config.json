@@ -1,0 +1,187 @@
+{
+  "features": [
+    "age_months",
+    "male",
+    "race_preta",
+    "race_parda",
+    "reg_norte",
+    "reg_nordeste",
+    "reg_sul",
+    "reg_co",
+    "urban",
+    "educ_fund_comp",
+    "educ_medio",
+    "educ_superior",
+    "ien",
+    "ebia_leve",
+    "ebia_mod",
+    "ebia_grave",
+    "esgoto_adeq",
+    "agua_rede",
+    "cesarean",
+    "gest_weeks",
+    "birth_weight",
+    "prenatal_visits",
+    "maternal_age",
+    "breastfed",
+    "formula",
+    "feed_exclusive",
+    "feed_mixed"
+  ],
+  "feature_names": [
+    "Idade (meses)",
+    "Sexo masculino",
+    "Cor preta",
+    "Cor parda",
+    "Norte",
+    "Nordeste",
+    "Sul",
+    "Centro-Oeste",
+    "Urbano",
+    "Educ: Fund.completo",
+    "Educ: Médio",
+    "Educ: Superior",
+    "IEN (quintil)",
+    "EBIA: leve",
+    "EBIA: moderada",
+    "EBIA: grave",
+    "Saneamento adequado",
+    "Água rede",
+    "Cesariana",
+    "Idade gestacional",
+    "Peso nascer",
+    "Consultas PN",
+    "Idade materna",
+    "Aleitamento materno",
+    "Fórmula infantil",
+    "Aleit. exclusivo",
+    "Aleit. misto"
+  ],
+  "feature_descriptions": {
+    "age_months": {
+      "type": "number",
+      "label": "Idade em meses",
+      "min": 6,
+      "max": 18
+    },
+    "male": {
+      "type": "binary",
+      "label": "Sexo masculino"
+    },
+    "race_preta": {
+      "type": "binary",
+      "label": "Cor preta"
+    },
+    "race_parda": {
+      "type": "binary",
+      "label": "Cor parda"
+    },
+    "reg_norte": {
+      "type": "binary",
+      "label": "Região Norte"
+    },
+    "reg_nordeste": {
+      "type": "binary",
+      "label": "Região Nordeste"
+    },
+    "reg_sul": {
+      "type": "binary",
+      "label": "Região Sul"
+    },
+    "reg_co": {
+      "type": "binary",
+      "label": "Região Centro-Oeste"
+    },
+    "urban": {
+      "type": "binary",
+      "label": "Zona urbana"
+    },
+    "educ_fund_comp": {
+      "type": "binary",
+      "label": "Mãe: fundamental completo"
+    },
+    "educ_medio": {
+      "type": "binary",
+      "label": "Mãe: ensino médio"
+    },
+    "educ_superior": {
+      "type": "binary",
+      "label": "Mãe: ensino superior"
+    },
+    "ien": {
+      "type": "number",
+      "label": "IEN quintil (1=pobre, 5=rico)",
+      "min": 1,
+      "max": 5
+    },
+    "ebia_leve": {
+      "type": "binary",
+      "label": "Inseg. alimentar leve"
+    },
+    "ebia_mod": {
+      "type": "binary",
+      "label": "Inseg. alimentar moderada"
+    },
+    "ebia_grave": {
+      "type": "binary",
+      "label": "Inseg. alimentar grave"
+    },
+    "esgoto_adeq": {
+      "type": "binary",
+      "label": "Saneamento adequado"
+    },
+    "agua_rede": {
+      "type": "binary",
+      "label": "Água de rede"
+    },
+    "cesarean": {
+      "type": "binary",
+      "label": "Parto cesariana"
+    },
+    "gest_weeks": {
+      "type": "number",
+      "label": "Idade gestacional (semanas)",
+      "min": 26,
+      "max": 43
+    },
+    "birth_weight": {
+      "type": "number",
+      "label": "Peso ao nascer (g)",
+      "min": 500,
+      "max": 5500
+    },
+    "prenatal_visits": {
+      "type": "number",
+      "label": "Consultas pré-natal",
+      "min": 0,
+      "max": 20
+    },
+    "maternal_age": {
+      "type": "number",
+      "label": "Idade materna (anos)",
+      "min": 13,
+      "max": 50
+    },
+    "breastfed": {
+      "type": "binary",
+      "label": "Em aleitamento materno"
+    },
+    "formula": {
+      "type": "binary",
+      "label": "Usa fórmula infantil"
+    },
+    "feed_exclusive": {
+      "type": "binary",
+      "label": "Aleitamento exclusivo"
+    },
+    "feed_mixed": {
+      "type": "binary",
+      "label": "Aleitamento misto"
+    }
+  },
+  "decision_rules": {
+    "SUPLEMENTAR": "CATE Hb > 0 E CATE WFL >= -0.05",
+    "TRADE-OFF": "CATE Hb > 0 E CATE WFL < -0.05",
+    "NAO_SUPLEMENTAR": "CATE Hb <= 0"
+  }
+}

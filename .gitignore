@@ -1,0 +1,17 @@
+# Data (too large for GitHub)
+*.csv
+*.xlsx
+
+# Virtual environment
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+
+# Models (large)
+deploy/*.joblib
