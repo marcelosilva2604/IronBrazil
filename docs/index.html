@@ -55,10 +55,10 @@
         <div class="card">
             <h2>Dados da Crianca</h2>
             <div class="form-grid">
-                <div class="form-group"><label>Idade (meses)</label><input type="number" id="age_months" min="6" max="18" value="9"></div>
+                <div class="form-group"><label>Idade (meses) *6-18</label><input type="number" id="age_months" min="6" max="18" step="1" value="9" required></div>
                 <div class="form-group"><label>Sexo</label><select id="male"><option value="1">Masculino</option><option value="0">Feminino</option></select></div>
-                <div class="form-group"><label>Peso ao nascer (g)</label><input type="number" id="birth_weight" min="500" max="5500" value="3200"></div>
-                <div class="form-group"><label>Idade gestacional (semanas)</label><input type="number" id="gest_weeks" min="26" max="43" value="39"></div>
+                <div class="form-group"><label>Peso ao nascer (g) *500-5500</label><input type="number" id="birth_weight" min="500" max="5500" step="10" value="3200" required></div>
+                <div class="form-group"><label>Idade gestacional (sem) *24-43</label><input type="number" id="gest_weeks" min="24" max="43" step="1" value="39" required></div>
             </div>
         </div>
         <div class="card">
@@ -66,6 +66,7 @@
             <div class="form-grid">
                 <div class="form-group"><label>Em aleitamento materno?</label><select id="breastfed"><option value="1">Sim</option><option value="0">Nao</option></select></div>
                 <div class="form-group"><label>Usa formula infantil?</label><select id="formula_use"><option value="0">Nao</option><option value="1">Sim</option></select></div>
+                <div class="form-group"><label>Recebe leite de vaca?</label><select id="cow_milk"><option value="0">Nao</option><option value="1">Sim</option></select></div>
             </div>
         </div>
         <div class="card">
@@ -78,11 +79,11 @@
         <div class="card">
             <h2>Dados Maternos e Socioeconomicos</h2>
             <div class="form-grid">
-                <div class="form-group"><label>Idade materna (anos)</label><input type="number" id="maternal_age" min="13" max="50" value="26"></div>
+                <div class="form-group"><label>Idade materna (anos) *12-55</label><input type="number" id="maternal_age" min="12" max="55" step="1" value="26" required></div>
                 <div class="form-group"><label>Escolaridade materna</label><select id="education"><option value="fund_inc">Fundamental incompleto</option><option value="fund_comp">Fundamental completo</option><option value="medio" selected>Ensino medio</option><option value="superior">Ensino superior</option></select></div>
                 <div class="form-group"><label>Quintil de riqueza (IEN)</label><select id="ien"><option value="1">Q1 (mais pobre)</option><option value="2" selected>Q2</option><option value="3">Q3</option><option value="4">Q4</option><option value="5">Q5 (mais rico)</option></select></div>
                 <div class="form-group"><label>Inseguranca alimentar</label><select id="ebia"><option value="seguro" selected>Seguranca alimentar</option><option value="leve">Inseguranca leve</option><option value="moderada">Inseguranca moderada</option><option value="grave">Inseguranca grave</option></select></div>
-                <div class="form-group"><label>Consultas pre-natal</label><input type="number" id="prenatal_visits" min="0" max="20" value="7"></div>
+                <div class="form-group"><label>Consultas pre-natal *0-20</label><input type="number" id="prenatal_visits" min="0" max="20" step="1" value="7" required></div>
                 <div class="form-group"><label>Tipo de parto</label><select id="cesarean"><option value="0">Normal</option><option value="1">Cesariana</option></select></div>
                 <div class="form-group"><label>Saneamento</label><select id="esgoto_adeq"><option value="1" selected>Adequado</option><option value="0">Inadequado</option></select></div>
                 <div class="form-group"><label>Agua</label><select id="agua_rede"><option value="1" selected>Rede geral</option><option value="0">Outra</option></select></div>
@@ -119,6 +120,9 @@
             const ebia = document.getElementById('ebia').value;
             const bf = parseInt(document.getElementById('breastfed').value);
             const fm = parseInt(document.getElementById('formula_use').value);
+            const cm = parseInt(document.getElementById('cow_milk').value);
+            const feed_exclusive = (bf === 1 && fm === 0 && cm === 0) ? 1 : 0;
+            const feed_mixed = (bf === 1 && (fm === 1 || cm === 1)) ? 1 : 0;
             return [
                 parseFloat(document.getElementById('age_months').value),
                 parseInt(document.getElementById('male').value),
@@ -137,11 +141,34 @@
                 parseFloat(document.getElementById('prenatal_visits').value),
                 parseFloat(document.getElementById('maternal_age').value),
                 bf, fm,
-                (bf === 1 && fm === 0) ? 1 : 0,
-                (bf === 1 && fm === 1) ? 1 : 0,
+                feed_exclusive,
+                feed_mixed,
             ];
         }
+        function validate() {
+            const errors = [];
+            const age = parseFloat(document.getElementById('age_months').value);
+            const bw = parseFloat(document.getElementById('birth_weight').value);
+            const gw = parseFloat(document.getElementById('gest_weeks').value);
+            const pn = parseFloat(document.getElementById('prenatal_visits').value);
+            const ma = parseFloat(document.getElementById('maternal_age').value);
+
+            if (isNaN(age) || age < 6 || age > 18) errors.push('Idade deve ser entre 6 e 18 meses (faixa do modelo)');
+            if (isNaN(bw) || bw < 500 || bw > 5500) errors.push('Peso ao nascer deve ser entre 500g e 5500g');
+            if (isNaN(gw) || gw < 24 || gw > 43) errors.push('Idade gestacional deve ser entre 24 e 43 semanas');
+            if (isNaN(pn) || pn < 0 || pn > 20) errors.push('Consultas pre-natal deve ser entre 0 e 20');
+            if (isNaN(ma) || ma < 12 || ma > 55) errors.push('Idade materna deve ser entre 12 e 55 anos');
+
+            if (errors.length > 0) {
+                alert('Corrija os seguintes campos:\n\n' + errors.join('\n'));
+                return false;
+            }
+            return true;
+        }
+
         function predict() {
+            if (!validate()) return;
+
             const input = getInput();
             const hb = score_hb(input);
             const wfl = score_anthro_zwfl(input);
