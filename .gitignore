@@ -18,5 +18,7 @@ deploy/*.joblib
 
 # Internal docs (not for public)
 CLAUDE.md
+TEMPLATE_LANCET_DIGITAL_HEALTH.md
 RESULTADOS_COMPLETOS.md
 RESULTADOS_PARCIAIS.md
+artigos_lancet/
