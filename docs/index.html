@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IronBrazil - Ferramenta de Decisão sobre Suplementação de Ferro</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f2f5; color: #1a1a2e; line-height: 1.6; }
+
+        .header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); color: white; padding: 2rem; text-align: center; }
+        .header h1 { font-size: 1.8rem; margin-bottom: 0.3rem; }
+        .header p { opacity: 0.85; font-size: 0.95rem; }
+        .header .badge { display: inline-block; background: rgba(255,255,255,0.15); padding: 0.2rem 0.8rem; border-radius: 20px; font-size: 0.8rem; margin-top: 0.5rem; }
+
+        .container { max-width: 800px; margin: 0 auto; padding: 1.5rem; }
+
+        .card { background: white; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .card h2 { font-size: 1.1rem; color: #0f3460; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #e8ecf1; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+        @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+
+        .form-group { margin-bottom: 0.3rem; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: #333; margin-bottom: 0.2rem; }
+        .form-group select, .form-group input { width: 100%; padding: 0.5rem; border: 1.5px solid #ddd; border-radius: 8px; font-size: 0.9rem; transition: border-color 0.2s; }
+        .form-group select:focus, .form-group input:focus { border-color: #0f3460; outline: none; }
+
+        .btn { display: block; width: 100%; padding: 0.9rem; background: linear-gradient(135deg, #0f3460, #1a5276); color: white; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: transform 0.1s, box-shadow 0.2s; margin-top: 1rem; }
+        .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(15,52,96,0.3); }
+        .btn:active { transform: translateY(0); }
+
+        .result { display: none; margin-top: 1.5rem; }
+        .result.show { display: block; }
+
+        .result-card { border-radius: 12px; padding: 1.5rem; text-align: center; color: white; margin-bottom: 1rem; }
+        .result-card.suplementar { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+        .result-card.tradeoff { background: linear-gradient(135deg, #f39c12, #e67e22); }
+        .result-card.nao { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+
+        .result-card h3 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .result-card p { opacity: 0.95; font-size: 0.95rem; }
+
+        .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+        .metric { background: #f8f9fa; border-radius: 10px; padding: 1rem; text-align: center; }
+        .metric .value { font-size: 1.4rem; font-weight: 700; }
+        .metric .label { font-size: 0.8rem; color: #666; }
+        .metric.positive .value { color: #27ae60; }
+        .metric.negative .value { color: #e74c3c; }
+        .metric.neutral .value { color: #f39c12; }
+
+        .disclaimer { background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 1rem; margin-top: 1rem; font-size: 0.8rem; color: #856404; }
+
+        .footer { text-align: center; padding: 2rem; color: #666; font-size: 0.8rem; }
+        .footer a { color: #0f3460; }
+
+        .info-box { background: #e8f4fd; border-left: 4px solid #0f3460; padding: 0.8rem 1rem; border-radius: 0 8px 8px 0; margin-bottom: 1rem; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>IronBrazil</h1>
+        <p>Ferramenta de Decisão sobre Suplementação de Ferro em Lactentes</p>
+        <div class="badge">Baseado em Causal Forest + ENANI-2019 (n=3.127)</div>
+    </div>
+
+    <div class="container">
+        <div class="info-box">
+            Este modelo utiliza <strong>Causal Machine Learning</strong> (Causal Forest, Athey & Imbens 2018) para estimar o efeito individualizado da suplementação de ferro na hemoglobina e no crescimento de cada criança, com base em 27 características.
+        </div>
+
+        <div class="card">
+            <h2>Dados da Crianca</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Idade (meses)</label>
+                    <input type="number" id="age_months" min="6" max="18" value="9">
+                </div>
+                <div class="form-group">
+                    <label>Sexo</label>
+                    <select id="male"><option value="1">Masculino</option><option value="0">Feminino</option></select>
+                </div>
+                <div class="form-group">
+                    <label>Peso ao nascer (g)</label>
+                    <input type="number" id="birth_weight" min="500" max="5500" value="3200">
+                </div>
+                <div class="form-group">
+                    <label>Idade gestacional (semanas)</label>
+                    <input type="number" id="gest_weeks" min="26" max="43" value="39">
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Alimentacao</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Em aleitamento materno?</label>
+                    <select id="breastfed" onchange="updateFeeding()"><option value="1">Sim</option><option value="0">Nao</option></select>
+                </div>
+                <div class="form-group">
+                    <label>Usa formula infantil?</label>
+                    <select id="formula_use" onchange="updateFeeding()"><option value="0">Nao</option><option value="1">Sim</option></select>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Cor/Raca</h2>
+            <div class="form-group">
+                <select id="race">
+                    <option value="branca">Branca</option>
+                    <option value="parda" selected>Parda</option>
+                    <option value="preta">Preta</option>
+                    <option value="outra">Outra</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Regiao</h2>
+            <div class="form-group">
+                <select id="region">
+                    <option value="sudeste">Sudeste</option>
+                    <option value="nordeste">Nordeste</option>
+                    <option value="norte">Norte</option>
+                    <option value="sul">Sul</option>
+                    <option value="co">Centro-Oeste</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Dados Maternos e Socioeconomicos</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Idade materna (anos)</label>
+                    <input type="number" id="maternal_age" min="13" max="50" value="26">
+                </div>
+                <div class="form-group">
+                    <label>Escolaridade materna</label>
+                    <select id="education">
+                        <option value="fund_inc">Fundamental incompleto</option>
+                        <option value="fund_comp">Fundamental completo</option>
+                        <option value="medio" selected>Ensino medio</option>
+                        <option value="superior">Ensino superior</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Quintil de riqueza (IEN)</label>
+                    <select id="ien">
+                        <option value="1">Q1 (mais pobre)</option>
+                        <option value="2" selected>Q2</option>
+                        <option value="3">Q3</option>
+                        <option value="4">Q4</option>
+                        <option value="5">Q5 (mais rico)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Inseguranca alimentar</label>
+                    <select id="ebia">
+                        <option value="seguro" selected>Seguranca alimentar</option>
+                        <option value="leve">Inseguranca leve</option>
+                        <option value="moderada">Inseguranca moderada</option>
+                        <option value="grave">Inseguranca grave</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Consultas pre-natal</label>
+                    <input type="number" id="prenatal_visits" min="0" max="20" value="7">
+                </div>
+                <div class="form-group">
+                    <label>Tipo de parto</label>
+                    <select id="cesarean"><option value="0">Normal</option><option value="1">Cesariana</option></select>
+                </div>
+                <div class="form-group">
+                    <label>Saneamento</label>
+                    <select id="esgoto_adeq"><option value="1" selected>Adequado</option><option value="0">Inadequado</option></select>
+                </div>
+                <div class="form-group">
+                    <label>Agua</label>
+                    <select id="agua_rede"><option value="1" selected>Rede geral</option><option value="0">Outra</option></select>
+                </div>
+                <div class="form-group">
+                    <label>Zona</label>
+                    <select id="urban"><option value="1" selected>Urbana</option><option value="0">Rural</option></select>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn" onclick="predict()">Avaliar Suplementacao de Ferro</button>
+
+        <div class="result" id="result">
+            <div class="result-card" id="resultCard">
+                <h3 id="resultTitle"></h3>
+                <p id="resultDesc"></p>
+            </div>
+            <div class="metrics">
+                <div class="metric" id="metricHb">
+                    <div class="value" id="valueHb"></div>
+                    <div class="label">Efeito na Hemoglobina (g/dL)</div>
+                </div>
+                <div class="metric" id="metricWfl">
+                    <div class="value" id="valueWfl"></div>
+                    <div class="label">Efeito no Crescimento (z-score)</div>
+                </div>
+            </div>
+            <div class="disclaimer">
+                <strong>Aviso:</strong> Esta ferramenta e baseada em analise observacional (ENANI-2019) com Causal Machine Learning. Nao substitui avaliacao clinica. Associacoes, nao causalidade. Validacao prospectiva necessaria antes de aplicacao clinica.
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>IronBrazil &mdash; Carvalho e Silva et al. (2026)</p>
+        <p>Baseado em ENANI-2019 | Causal Forest (Athey & Imbens 2018) | <a href="https://github.com/marcelosilva2604/IronBrazil">GitHub</a></p>
+    </div>
+
+    <script src="model_hb.js"></script>
+    <script src="model_wfl.js"></script>
+    <script>
+        function updateFeeding() {
+            // Auto-calculate feed_exclusive and feed_mixed
+        }
+
+        function getInput() {
+            const race = document.getElementById('race').value;
+            const region = document.getElementById('region').value;
+            const educ = document.getElementById('education').value;
+            const ebia = document.getElementById('ebia').value;
+            const bf = parseInt(document.getElementById('breastfed').value);
+            const fm = parseInt(document.getElementById('formula_use').value);
+
+            return [
+                parseFloat(document.getElementById('age_months').value),     // age_months
+                parseInt(document.getElementById('male').value),             // male
+                race === 'preta' ? 1 : 0,                                   // race_preta
+                race === 'parda' ? 1 : 0,                                   // race_parda
+                region === 'norte' ? 1 : 0,                                 // reg_norte
+                region === 'nordeste' ? 1 : 0,                              // reg_nordeste
+                region === 'sul' ? 1 : 0,                                   // reg_sul
+                region === 'co' ? 1 : 0,                                    // reg_co
+                parseInt(document.getElementById('urban').value),            // urban
+                educ === 'fund_comp' ? 1 : 0,                               // educ_fund_comp
+                educ === 'medio' ? 1 : 0,                                   // educ_medio
+                educ === 'superior' ? 1 : 0,                                // educ_superior
+                parseInt(document.getElementById('ien').value),              // ien
+                ebia === 'leve' ? 1 : 0,                                    // ebia_leve
+                ebia === 'moderada' ? 1 : 0,                                // ebia_mod
+                ebia === 'grave' ? 1 : 0,                                   // ebia_grave
+                parseInt(document.getElementById('esgoto_adeq').value),     // esgoto_adeq
+                parseInt(document.getElementById('agua_rede').value),        // agua_rede
+                parseInt(document.getElementById('cesarean').value),         // cesarean
+                parseFloat(document.getElementById('gest_weeks').value),     // gest_weeks
+                parseFloat(document.getElementById('birth_weight').value),   // birth_weight
+                parseFloat(document.getElementById('prenatal_visits').value),// prenatal_visits
+                parseFloat(document.getElementById('maternal_age').value),   // maternal_age
+                bf,                                                          // breastfed
+                fm,                                                          // formula
+                (bf === 1 && fm === 0) ? 1 : 0,                             // feed_exclusive
+                (bf === 1 && fm === 1) ? 1 : 0,                             // feed_mixed
+            ];
+        }
+
+        function predict() {
+            const input = getInput();
+            const cate_hb = score_hb(input);
+            const cate_wfl = score_wfl(input);
+
+            let decision, desc, cardClass;
+            if (cate_hb > 0.01 && cate_wfl >= -0.05) {
+                decision = 'SUPLEMENTAR';
+                desc = 'O modelo estima que esta crianca se beneficiaria da suplementacao de ferro, com melhora na hemoglobina sem prejuizo ao crescimento.';
+                cardClass = 'suplementar';
+            } else if (cate_hb > 0.01 && cate_wfl < -0.05) {
+                decision = 'TRADE-OFF (avaliar caso a caso)';
+                desc = 'O ferro pode melhorar a hemoglobina, mas ha risco de prejuizo ao crescimento. Avaliar individualmente com exames laboratoriais.';
+                cardClass = 'tradeoff';
+            } else {
+                decision = 'CONSIDERAR NAO SUPLEMENTAR';
+                desc = 'O modelo estima beneficio minimo ou ausente para esta crianca. Considerar manter aleitamento materno exclusivo e reavaliar.';
+                cardClass = 'nao';
+            }
+
+            document.getElementById('resultTitle').textContent = decision;
+            document.getElementById('resultDesc').textContent = desc;
+            const resultCard = document.getElementById('resultCard');
+            resultCard.className = 'result-card ' + cardClass;
+
+            const hbEl = document.getElementById('metricHb');
+            document.getElementById('valueHb').textContent = (cate_hb >= 0 ? '+' : '') + cate_hb.toFixed(4);
+            hbEl.className = 'metric ' + (cate_hb > 0.01 ? 'positive' : (cate_hb < -0.01 ? 'negative' : 'neutral'));
+
+            const wflEl = document.getElementById('metricWfl');
+            document.getElementById('valueWfl').textContent = (cate_wfl >= 0 ? '+' : '') + cate_wfl.toFixed(4);
+            wflEl.className = 'metric ' + (cate_wfl > 0.01 ? 'positive' : (cate_wfl < -0.01 ? 'negative' : 'neutral'));
+
+            document.getElementById('result').classList.add('show');
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
