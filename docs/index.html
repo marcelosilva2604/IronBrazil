@@ -174,8 +174,8 @@
             const wfl = score_anthro_zwfl(input);
             const inf = score_infection_score(input);
             const dia = score_diarreia(input);
-            const infectionRisk = (inf > 0.05) || (dia > 0.02);
-            const hbBenefit = hb > 0.01;
+            const infectionRisk = (inf > 0.05) || (dia > 0.018);
+            const hbBenefit = hb > 0.05;
             const growthHarm = wfl < -0.05;
             let decision, desc, cls;
             if (hbBenefit && !infectionRisk && !growthHarm) {
