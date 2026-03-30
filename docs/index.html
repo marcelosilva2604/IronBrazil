@@ -94,10 +94,10 @@
         <div class="result" id="result">
             <div class="result-card" id="resultCard"><h3 id="resultTitle"></h3><p id="resultDesc"></p></div>
             <div class="metrics">
-                <div class="metric" id="mHb"><div class="value" id="vHb"></div><div class="label">Hemoglobina (g/dL)</div></div>
-                <div class="metric" id="mWfl"><div class="value" id="vWfl"></div><div class="label">Crescimento (z-score)</div></div>
-                <div class="metric" id="mInf"><div class="value" id="vInf"></div><div class="label">Escore Infeccioso</div></div>
-                <div class="metric" id="mDia"><div class="value" id="vDia"></div><div class="label">Risco de Diarreia</div></div>
+                <div class="metric" id="mHb"><div class="value" id="vHb"></div><div class="label">Efeito na Hemoglobina (g/dL)</div></div>
+                <div class="metric" id="mWfl"><div class="value" id="vWfl"></div><div class="label">Efeito no Crescimento (z-score)</div></div>
+                <div class="metric" id="mInf"><div class="value" id="vInf"></div><div class="label">Risco Infeccioso (variacao %)</div></div>
+                <div class="metric" id="mDia"><div class="value" id="vDia"></div><div class="label">Risco de Diarreia (variacao %)</div></div>
             </div>
             <div class="disclaimer">
                 <strong>Aviso:</strong> Ferramenta baseada em Causal Forest (Athey & Imbens 2018) aplicado ao ENANI-2019. Nao substitui avaliacao clinica. Associacoes observacionais, nao causalidade. Validacao prospectiva necessaria.
@@ -191,17 +191,24 @@
             document.getElementById('resultTitle').textContent = decision;
             document.getElementById('resultDesc').textContent = desc;
             document.getElementById('resultCard').className = 'result-card ' + cls;
-            function setMetric(id, val, inverted) {
+            function setMetric(id, val, format, inverted) {
                 const el = document.getElementById(id);
-                document.getElementById(id.replace('m','v')).textContent = (val>=0?'+':'') + val.toFixed(4);
-                const cls = inverted ? (val < -0.01 ? 'positive' : (val > 0.01 ? 'negative' : 'neutral'))
-                                     : (val > 0.01 ? 'positive' : (val < -0.01 ? 'negative' : 'neutral'));
+                let text;
+                if (format === 'abs') {
+                    text = (val>=0?'+':'') + val.toFixed(2);
+                } else {
+                    text = (val>=0?'+':'') + (val*100).toFixed(1) + '%';
+                }
+                document.getElementById(id.replace('m','v')).textContent = text;
+                const threshold = format === 'pct' ? 0.005 : 0.01;
+                const cls = inverted ? (val < -threshold ? 'positive' : (val > threshold ? 'negative' : 'neutral'))
+                                     : (val > threshold ? 'positive' : (val < -threshold ? 'negative' : 'neutral'));
                 el.className = 'metric ' + cls;
             }
-            setMetric('mHb', hb, false);
-            setMetric('mWfl', wfl, false);
-            setMetric('mInf', inf, true);
-            setMetric('mDia', dia, true);
+            setMetric('mHb', hb, 'abs', false);
+            setMetric('mWfl', wfl, 'abs', false);
+            setMetric('mInf', inf, 'pct', true);
+            setMetric('mDia', dia, 'pct', true);
             document.getElementById('result').classList.add('show');
             document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
         }
