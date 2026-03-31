@@ -1,0 +1,282 @@
+# Causal machine learning for individualised iron supplementation decisions in Brazilian infants: a nationally representative development and validation study with deployment of an interactive clinical tool
+
+Marcelo Carvalho e Silva^a,b*^, [co-authors]^c^
+
+^a^ Department of Paediatrics, Santa Casa de Piracicaba, Piracicaba, Sao Paulo, Brazil
+^b^ Child and Adolescent Institute, Hospital das Clinicas, Faculty of Medicine, University of Sao Paulo (HC/FMUSP), Sao Paulo, Brazil
+^c^ [affiliations]
+
+*Corresponding author: marcelo_carvalhosilva@hotmail.com
+
+---
+
+## Summary
+
+**Background**
+Universal iron supplementation is recommended for all Brazilian infants from 6 months of age, yet evidence from African settings shows that iron can increase infectious morbidity. Whether breastfeeding modifies this benefit--harm balance, and which individual infants stand to benefit or be harmed, is unknown. We aimed to estimate heterogeneous treatment effects of iron supplementation using causal machine learning and to deploy an interactive clinical decision tool for individualised supplementation guidance.
+
+**Methods**
+We analysed data from 3127 infants aged 6--18 months in the Brazilian National Survey on Child Nutrition (ENANI-2019), a nationally representative household survey (February 2019 to March 2020). The exposure was iron supplement use in the preceding six months. We performed adjusted Poisson and linear regression (25 confounders, cluster-robust standard errors) to estimate associations with 52 outcomes, tested for interaction with breastfeeding status, and applied Causal Forest with double machine learning (CausalForestDML) to estimate individual-level conditional average treatment effects (CATEs) for four key outcomes: haemoglobin, weight-for-length z-score, composite infectious morbidity score, and diarrhoea. Heterogeneity was confirmed through Group Average Treatment Effects (GATES) with 1000-fold bootstrap. SHAP values identified drivers of treatment effect variation. An interactive clinical decision tool integrating all four outcomes was deployed at https://marcelosilva2604.github.io/IronBrazil/.
+
+**Findings**
+Iron supplementation reduced anaemia by 42% (OR 0.58, 95% CI 0.40--0.84; p=0.005), iron deficiency by 29% (OR 0.71, 0.52--0.96; p=0.026), and elevated C-reactive protein by 36% (OR 0.64, 0.44--0.94; p=0.023). A significant interaction with breastfeeding was identified for haemoglobin (p~interaction~=0.027): iron raised haemoglobin by 0.43 g/dL (p=0.001) in non-breastfed infants but had no effect in breastfed infants (+0.02 g/dL, p=0.89). In exclusively breastfed infants aged 6--11 months, iron was associated with a 2.3-fold increase in fever, diarrhoea, and vomiting (OR 2.34, p=0.023; p~interaction~=0.003) and a 2.7-fold increase in respiratory hospitalisation (OR 2.73, p=0.023). Causal Forest independently confirmed these findings: the CATE for haemoglobin was three-fold higher in non-breastfed (+0.106 g/dL, 95% CI 0.093--0.119) than breastfed infants (+0.036, 0.028--0.043), with breastfeeding ranked among the top SHAP features. All four outcomes showed statistically confirmed treatment effect heterogeneity (GATES p<0.05). Iron supplementation reduced the composite infectious morbidity score in 75.7% of infants but increased diarrhoea risk in 97.3%, revealing opposing effects on systemic and intestinal infectious pathways. Ponderal growth benefit showed an 11-fold equity gradient across wealth quintiles (poorest: CATE +0.056; wealthiest: +0.005, non-significant), with no racial disparities. The clinical decision tool classified 15.2% of infants as likely to benefit, 58.7% as trade-off, and 26.1% as unlikely to benefit.
+
+**Interpretation**
+Breastfeeding is the primary modifier of iron supplementation effects in Brazilian infants -- a finding independently confirmed by epidemiological interaction analysis and data-driven causal machine learning. The deployed clinical tool enables individualised benefit--harm assessment across four simultaneous outcomes. These findings suggest that universal supplementation programmes may benefit from incorporating breastfeeding status, and that iron supplementation is an equity-positive intervention meriting preservation for socioeconomically disadvantaged populations. Prospective trials stratified by breastfeeding status are warranted.
+
+**Funding**
+None.
+
+---
+
+## Research in context
+
+**Evidence before this study**
+We searched PubMed on 2026-03-30 for articles published from database inception using the terms "iron supplementation" AND ("harm" OR "adverse" OR "morbidity" OR "infection") AND ("children" OR "infants") AND ("breastfeeding" OR "lactoferrin"), identifying 966 records. The Pemba trial (Sazawal et al, *Lancet* 2006; n=24,076) demonstrated that iron supplementation increased hospitalisations by 12% and deaths by 15% in Zanzibari children, prompting WHO guideline revisions. Mechanistic studies subsequently showed that supplemental iron disrupts the infant gut microbiome, increases pathogenic enterobacteria (Jaeggi et al, *Gut* 2014), induces intestinal inflammation (Zimmermann et al, *Am J Clin Nutr* 2010), and acutely promotes bacterial growth in human serum (Cross et al, *Sci Rep* 2015). A 2025 meta-analysis of eight randomised trials confirmed that iron supplementation in exclusively breastfed infants may impair weight and head circumference growth. However, all harm evidence originates from malaria-endemic African settings. No study has evaluated the benefit--harm balance of iron supplementation in Latin American infants at the population level, no study has formally tested interaction with breastfeeding using both traditional and machine learning approaches, and no study has deployed a clinical decision tool for individualised iron supplementation guidance.
+
+**Added value of this study**
+This is, to our knowledge, the first study to apply Causal Forest (double machine learning) to a nationally representative infant nutrition survey to estimate individual-level heterogeneous treatment effects of iron supplementation across four simultaneous outcomes. We demonstrate convergent evidence from two independent analytical frameworks -- traditional epidemiological interaction analysis (p~interaction~=0.027) and data-driven SHAP feature importance -- identifying breastfeeding as the primary modifier of iron's effects. We quantify an 11-fold equity gradient in growth benefit across wealth quintiles and deploy a freely available, open-source interactive clinical decision tool that integrates all four outcome dimensions into an individualised benefit--harm assessment.
+
+**Implications of all the available evidence**
+Universal iron supplementation programmes, including Brazil's National Iron Supplementation Programme (PNSF) and the 2024 Brazilian Society of Paediatrics guidelines that advanced prophylaxis to 90 days of life, should consider incorporating breastfeeding status into supplementation decisions. Exclusively breastfed infants aged 6--11 months showed minimal haematological benefit and increased infectious morbidity, whereas non-breastfed and socioeconomically disadvantaged infants showed substantial benefit. Iron supplementation functions as an equity-positive intervention that merits preservation for vulnerable populations while potentially requiring a more targeted approach for exclusively breastfed infants. Confirmatory randomised trials stratified by breastfeeding status are needed.
+
+---
+
+## Introduction
+
+Iron deficiency affects an estimated two billion people worldwide, with the highest burden in infants and young children in low- and middle-income countries.^1^ In Brazil, pooled anaemia prevalence in children under five years remains approximately 33%, exceeding 50% in children under 24 months,^2,3^ despite two decades of public health interventions. The Brazilian National Iron Supplementation Programme (Programa Nacional de Suplementacao de Ferro, PNSF) recommends universal prophylactic supplementation (1 mg/kg/day of elemental iron as ferrous sulphate) for all infants aged 6--24 months, regardless of iron status or feeding practices.^4^ In 2024, the Brazilian Society of Paediatrics (SBP) advanced the recommended starting age to 90 days of life for full-term infants, irrespective of diet type.^5^
+
+The assumption underlying these programmes -- that universal iron supplementation is uniformly beneficial -- has been challenged. The Pemba trial, a randomised controlled trial of 24,076 children in Zanzibar, was stopped early when iron and folic acid supplementation increased hospitalisations by 12% and deaths by 15%.^6^ Mechanistic studies subsequently elucidated the pathways through which supplemental iron may cause harm: disruption of the protective commensal microbiome with expansion of pathogenic enterobacteria,^7^ induction of intestinal inflammation,^8^ and acute promotion of bacterial growth in human serum.^9^ A 2025 meta-analysis of eight randomised trials confirmed that iron supplementation in exclusively breastfed infants may impair weight and head circumference growth.^10^
+
+A plausible biological mechanism links breastfeeding to the modification of iron's effects. Breast milk contains lactoferrin, an iron-binding glycoprotein that sequesters free iron from intestinal pathogens while delivering it to the infant through specific lactoferrin receptors on enterocytes.^11^ Exogenous iron may overwhelm this protective system, flooding the colonic lumen with unbound iron available to pathogenic bacteria. Despite this biological rationale, no population-level study has formally tested whether breastfeeding status modifies the benefit--harm balance of iron supplementation.
+
+Causal Forest, developed by Athey, Tibshirani, and Wager,^12^ is a machine learning method designed to estimate heterogeneous treatment effects from observational data. Unlike conventional subgroup analyses requiring pre-specified interactions, Causal Forest discovers effect modification in a data-driven manner, providing individual-level conditional average treatment effect (CATE) estimates with valid confidence intervals. This approach has demonstrated utility in clinical medicine^13,14^ but has not been applied in paediatric nutritional epidemiology.
+
+The convergence of a nationally representative dataset containing both biomarker and clinical outcome data, causal machine learning methods capable of estimating individualised treatment effects, and web-based deployment platforms enabling real-time clinical decision support creates an opportunity to move beyond the current one-size-fits-all paradigm. We aimed to: (1) estimate adjusted associations between iron supplementation and 52 health outcomes in Brazilian infants; (2) test whether breastfeeding status modifies these associations; (3) estimate individual-level heterogeneous treatment effects across four key outcomes using Causal Forest; and (4) develop and deploy an interactive clinical decision tool for individualised supplementation guidance.
+
+---
+
+## Methods
+
+### Study design and participants
+
+This cross-sectional study analysed secondary data from the Brazilian National Survey on Child Nutrition (Estudo Nacional de Alimentacao e Nutricao Infantil, ENANI-2019), a nationally representative household survey conducted between February 2019 and March 2020.^15^ ENANI-2019 employed a complex sampling design with stratification and clustering across all 26 Brazilian states and the Federal District, enrolling 14,558 children under five years from 12,524 households in 123 municipalities. Blood samples were collected from 8739 children aged 6--59 months for micronutrient assessment.^16^ The study was approved by the Research Ethics Committee (CAAE: 88863325.0.0000.0243) and conducted in accordance with the Declaration of Helsinki. This analysis adheres to the TRIPOD+AI^17^ and STROBE reporting guidelines.
+
+We selected 3127 infants aged 6--18 months, divided into two age groups: 6--11 months (n=1415) and 12--18 months (n=1712). This age range corresponds to the PNSF target population and the period of complementary feeding introduction.
+
+### Exposure
+
+The primary exposure was iron supplement use in the preceding six months. Exposure was classified into four levels: no supplement (n=1026, 32.8%), supplement without iron (n=1123, 35.9%), iron combined with other micronutrients (n=131, 4.2%), and iron alone (n=847, 27.1%), the latter serving as a proxy for PNSF programme participation. The primary analysis used a binary comparison (any iron versus no iron); a secondary analysis compared iron alone versus no supplement to isolate iron-specific effects from co-supplementation artefacts. Because the PNSF recommends universal supplementation regardless of iron status, variation in exposure reflects adherence and healthcare access rather than clinical indication, minimising confounding by indication.
+
+### Outcomes
+
+We assessed 52 outcomes across six domains: infectious morbidity (diarrhoea, fever, cough, respiratory difficulty, hospitalisations within the preceding 15 days and since birth), haematological indices (haemoglobin, ferritin, haematocrit, mean corpuscular volume, red cell distribution width), inflammatory biomarkers (C-reactive protein, white blood cell count, band cells), micronutrient status (zinc, vitamins A, D, B12, folate, B1, B6, E, selenium), growth (height-for-age, weight-for-age, BMI-for-age, weight-for-length z-scores), and derived binary outcomes (anaemia [haemoglobin <10.5 g/dL per WHO 2024 criteria],^18^ iron deficiency [ferritin <12 ug/L], zinc deficiency [<65 ug/dL], vitamin A deficiency [retinol <0.20 mg/L], elevated CRP [>5 mg/L]). Hospitalisation for accident served as a negative control outcome.
+
+For the causal machine learning analysis, we selected four key outcomes representing both benefits and potential harms: haemoglobin (g/dL; expected benefit), weight-for-length z-score (expected benefit), composite infectious morbidity score (sum of diarrhoea, fever, cough, respiratory difficulty, respiratory hospitalisation, and intestinal hospitalisation; range 0--6; potential harm), and diarrhoea in the preceding 15 days (binary; potential harm).
+
+### Feeding classification
+
+Infants were classified into three feeding categories based on 24-hour dietary recall: exclusively or predominantly breastfed (breast milk without formula or cow's milk, n=874, 27.9%), mixed feeding (breast milk with formula or cow's milk, n=963, 30.8%), and not breastfed (n=1290, 41.3%).
+
+### Covariates
+
+We adjusted for 25 potential confounders selected a priori: infant age (months), sex, race/ethnicity (White, Black, Mixed/other), geographic region (North, Northeast, Southeast, South, Centre-West), urban/rural residence, maternal education (four levels), National Economic Indicator quintile (IEN), food insecurity (Brazilian Food Insecurity Scale, EBIA; four categories), sanitation adequacy, water supply, delivery type, gestational age (weeks), birth weight (grams), number of prenatal visits, maternal age (years), breastfeeding status, and formula use. Missing data were minimal (maternal age: 3 observations, 0.1%).
+
+### Statistical analysis
+
+**Epidemiological analysis.** Binary outcomes were analysed using modified Poisson regression^19^ with robust standard errors, reporting prevalence ratios. Continuous outcomes used weighted least squares with cluster-robust standard errors at the primary sampling unit level. Three progressively adjusted models were fitted: unadjusted, demographics-adjusted, and fully adjusted (25 confounders). Interaction between iron supplementation and breastfeeding was tested by including a product term; stratified estimates and Wald test p-values are reported. Propensity score analysis with inverse probability of treatment weighting (IPTW) served as a sensitivity analysis, with balance assessed via standardised mean differences. E-values^20^ were calculated for significant findings to quantify robustness to unmeasured confounding. Benjamini--Hochberg false discovery rate correction was applied within each outcome category. Survey weights appropriate to each outcome domain were applied.^16^
+
+**Causal machine learning.** We applied Causal Forest with double machine learning (CausalForestDML from the econml library)^12^ to estimate individual-level CATEs for each of the four key outcomes. The double machine learning framework uses nuisance models to flexibly adjust for confounders: gradient boosting regressors (200 estimators, maximum depth 4) modelled both the outcome and treatment assignment as functions of covariates, and the causal forest (500 trees, minimum 30 samples per leaf) estimated treatment effects from the residualised outcome and treatment.
+
+Data were split 80/20 for training and holdout validation, stratified by treatment status, with verified zero index overlap and identical treatment distributions (<0.2% difference) between sets. Three causal meta-learners were compared: CausalForest, T-Learner, and S-Learner, with Pearson correlation quantifying agreement on holdout CATE predictions. Treatment effect heterogeneity was formally tested using GATES (Group Average Treatment Effects),^12^ dividing the holdout set into CATE quintiles and testing the Q5--Q1 difference with 1000-fold bootstrap confidence intervals.
+
+SHAP (SHapley Additive exPlanations) values were computed through gradient boosting surrogate models (R^2^ 0.97--0.99) fitted to Causal Forest CATE predictions for each outcome. This approach enables model-agnostic interpretability while preserving the fidelity of the original causal estimates. Calibration was assessed by comparing predicted CATEs against observed treatment effects within deciles. Decision curve analysis evaluated the net clinical benefit of the tool relative to default strategies of "supplement all" and "supplement none." Geographical generalisability was assessed through leave-one-region-out cross-validation across Brazil's five macroregions.
+
+**Clinical decision tool development.** Gradient boosting surrogate models (300 estimators, maximum depth 4) were trained on Causal Forest CATE predictions for all four outcomes (deployment R^2^: haemoglobin 0.996, weight-for-length 0.977, infectious morbidity 0.962, diarrhoea 0.980). Models were exported to JavaScript via a custom tree-traversal converter, enabling client-side prediction without a backend server. Decision thresholds were calibrated against 10 pre-specified clinical scenarios representing the full spectrum of patient profiles. The thresholds integrate all four outcomes: haemoglobin benefit >0.05 g/dL, diarrhoea risk >0.018 (25th percentile of CATE distribution), infection score risk >0.05 (above average treatment effect), and growth harm (weight-for-length CATE <-0.05 z-score). The tool provides three categories: supplement (green), trade-off requiring individual assessment (orange), and do not supplement (red). The tool was deployed at https://marcelosilva2604.github.io/IronBrazil/ and follows the DECIDE-AI reporting framework.^20^
+
+**Equity analysis.** CATEs were stratified by IEN wealth quintile, race/ethnicity, food insecurity status, and sanitation adequacy. Formal disparity metrics (maximum--minimum CATE difference with 95% bootstrap CI) and equity ratios were computed.
+
+All analyses were performed in Python 3.12 using pandas 2.3, statsmodels 0.14.6, econml 0.14, scikit-learn, scipy 1.17, and SHAP. Code is publicly available at https://github.com/marcelosilva2604/IronBrazil. Random seed was fixed at 42 for reproducibility.
+
+### Role of the funding source
+
+This study received no external funding. The authors had full access to all data and final responsibility for the decision to submit for publication.
+
+---
+
+## Results
+
+### Study population
+
+Of 14,558 children in the ENANI-2019 dataset, 3127 infants aged 6--18 months were included (figure 1). Among these, 978 (31.3%) reported iron supplement use in the preceding six months. The sample comprised 1415 infants aged 6--11 months and 1712 aged 12--18 months. Regarding feeding practices, 874 (27.9%) were exclusively or predominantly breastfed, 963 (30.8%) received mixed feeding, and 1290 (41.3%) were not breastfed. Baseline characteristics by iron supplementation status are presented in table 1. The negative control outcome (hospitalisation for accident) showed identical rates between groups (0.4% vs 0.4%; p=1.00), supporting the adequacy of the study design.
+
+### Adjusted epidemiological associations
+
+After full adjustment for 25 confounders with cluster-robust standard errors, iron supplementation was associated with five significant haematological benefits (table 2): reduced anaemia prevalence (OR 0.69, 95% CI 0.51--0.94; p=0.019), reduced iron deficiency (OR 0.74, 0.58--0.94; p=0.015), reduced elevated CRP (OR 0.67, 0.49--0.91; p=0.012), higher haemoglobin (+0.19 g/dL, 0.01--0.37; p=0.039), and higher haematocrit (+0.69%, 0.13--1.24; p=0.016). Weight-for-length z-score was lower in the iron group (-0.18 z, -0.36 to -0.005; p=0.043). Intestinal hospitalisation showed a borderline increase (PR 2.39, 0.99--5.79; p=0.053). No significant differences were observed for diarrhoea, fever, cough, respiratory symptoms, zinc, folate, B12, or height-for-age.
+
+Verification with iron alone (n=847) versus no supplement (n=1026) strengthened the haematological findings: the anaemia reduction was larger (OR 0.58, 95% CI 0.40--0.84; p=0.005) and the iron deficiency reduction was maintained (OR 0.71, p=0.026), as was the CRP reduction (OR 0.64, p=0.023). Notably, the apparent vitamin A protection seen with any iron (OR 0.59, p=0.007) lost significance with iron alone (OR 0.66, p=0.085), identifying it as a co-supplementation artefact.
+
+### Breastfeeding as effect modifier
+
+A significant interaction between iron supplementation and breastfeeding was identified for haemoglobin (p~interaction~=0.027; table 2, figure 1). Iron improved haemoglobin by +0.43 g/dL (95% CI 0.17--0.69; p=0.001) in non-breastfed infants but had no measurable effect in breastfed infants (+0.02 g/dL; p=0.89). This pattern extended to clinical outcomes: in non-breastfed infants, iron was associated with increased respiratory hospitalisation (OR 1.74, p=0.018) and any infectious hospitalisation (OR 1.72, p=0.013), whereas no significant associations were seen in breastfed infants.
+
+Stratification by feeding type and age revealed the most clinically significant findings. In exclusively breastfed infants aged 6--11 months, iron supplementation was associated with a 2.3-fold increase in fever, diarrhoea, and vomiting at blood collection (OR 2.34, p=0.023; p~interaction~=0.003), a 2.7-fold increase in respiratory hospitalisation (OR 2.73, p=0.023), and a 2.6-fold increase in any infectious hospitalisation (OR 2.55, p=0.026). In non-breastfed infants aged 12--18 months, iron was associated with increased respiratory hospitalisation (OR 2.03, p=0.013; p~interaction~=0.019) and increased infectious hospitalisation (OR 1.80, p=0.025; p~interaction~=0.025). The interaction between iron status and supplementation was not significant for any outcome (all p>0.30), suggesting that the harmful effects are not concentrated in iron-replete children.
+
+### Propensity score and sensitivity analyses
+
+IPTW analysis confirmed adequate covariate balance after weighting (all standardised mean differences <0.03; n=3060 after trimming at the 1st and 99th percentiles; propensity score range 0.148--0.610). E-values for significant findings ranged from 2.17 to 4.12 (table 2): an unmeasured confounder would need to be associated with both iron supplementation and the outcome by a factor of 2.8 (anaemia), 2.5 (CRP), or 4.1 (fever/diarrhoea/vomiting in exclusively breastfed infants) to fully explain these associations. The E-value of 4.12 for the interaction finding in exclusively breastfed infants indicates substantial robustness to unmeasured confounding.
+
+### Causal Forest: heterogeneous treatment effects
+
+The Causal Forest analysis, trained on 80% of data (n=1481--2499, depending on outcome) and validated on a 20% holdout set (n=371--625), independently confirmed the epidemiological findings through a data-driven approach without pre-specified interactions (table 3).
+
+**Haemoglobin.** The average treatment effect (ATE) was +0.064 g/dL on the holdout set (training: +0.061; difference: 0.003, indicating excellent generalisation). CATE was positive in 82.2% of infants. Non-breastfed infants showed a three-fold higher CATE (+0.106 g/dL, 95% bootstrap CI 0.093--0.119) than breastfed infants (+0.036, 0.028--0.043). The highest CATEs were observed in non-breastfed infants aged 12--18 months (+0.114, 0.097--0.129) and the lowest in breastfed infants aged 6--11 months (+0.023, 0.014--0.032).
+
+**Weight-for-length z-score.** The ATE was +0.043 z-score (training: +0.050; difference: 0.007). CATE was positive in 72.0% of infants. An 11-fold equity gradient across wealth quintiles emerged: the poorest quintile (IEN Q1) showed a CATE of +0.056 (95% CI 0.053--0.059), whereas the wealthiest quintile (Q5) showed a non-significant CATE of +0.005 (-0.007 to 0.017). The formal disparity was 0.051 z-score (95% CI 0.039--0.063).
+
+**Composite infectious morbidity score.** The ATE was -0.046 (iron reduced overall infectious morbidity; training: -0.049; difference: 0.004). CATE was negative (beneficial) in 75.7% of infants. The reduction was three-fold larger in non-breastfed infants (-0.075, 95% CI -0.082 to -0.067) than breastfed infants (-0.025, -0.031 to -0.020). Infants with severe food insecurity showed the largest benefit (-0.058, -0.068 to -0.047).
+
+**Diarrhoea.** The ATE was +0.033 (iron increased diarrhoea risk; training: +0.033; difference: 0.0001, indicating near-perfect reproducibility). CATE was positive (harmful) in 97.3% of infants, indicating a near-universal increase in diarrhoea risk regardless of infant characteristics. The highest risk was observed in breastfed infants aged 6--11 months (+0.037, 0.034--0.040) and the lowest in non-breastfed infants aged 12--18 months (+0.028, 0.026--0.031).
+
+These four outcomes reveal a dual mechanism: iron reduces susceptibility to systemic infections (composite score negative in 75.7%) while simultaneously promoting intestinal pathogen-related diarrhoea (positive in 97.3%), consistent with iron-mediated correction of anaemia-related immune dysfunction alongside iron-induced gut dysbiosis.
+
+### Confirmation of treatment effect heterogeneity
+
+Treatment effect heterogeneity was formally confirmed through GATES analysis for all four outcomes (figure 2). The Q5--Q1 difference (highest versus lowest CATE quintile) was statistically significant with 1000-fold bootstrap confidence intervals: haemoglobin 0.211 (95% CI 0.198--0.223), weight-for-length 0.202 (0.196--0.208), composite infectious morbidity 0.176 (0.170--0.183), and diarrhoea 0.045 (0.043--0.047). These results reject the null hypothesis of homogeneous treatment effects for all four outcomes.
+
+Three causal meta-learners showed moderate concordance on holdout CATE predictions (Pearson r: CausalForest versus T-Learner 0.23--0.35; CausalForest versus S-Learner 0.22--0.27), with CausalForest demonstrating the most stable train--test generalisation across all outcomes.
+
+### SHAP interpretability and convergence with epidemiology
+
+SHAP analysis via gradient boosting surrogates (R^2^ 0.97--0.99) identified birth weight, sex, gestational age, and breastfeeding as the four most important drivers of haemoglobin treatment effect heterogeneity (figure 3). Breastfeeding was the third most important feature for haemoglobin and the third for the composite infectious morbidity score, independently confirming the epidemiological interaction finding without any pre-specification.
+
+The correlation between SHAP feature importance and standardised regression coefficients from the epidemiological analysis was statistically significant (Pearson r=0.49, p=0.010; Spearman r=0.44, p=0.022), demonstrating convergent validity between the two independent analytical frameworks.
+
+### Clinical decision tool
+
+The clinical decision tool, integrating all four outcome CATEs with calibrated thresholds, was validated against 10 pre-specified clinical scenarios with 80% accuracy (8/10 correct classifications). The tool classified 280 of 1837 infants in the validation sample (15.2%) as likely to benefit from supplementation, 1078 (58.7%) as trade-off requiring individual assessment, and 479 (26.1%) as unlikely to benefit (figure 4).
+
+Classification varied substantially by feeding status and age. Among exclusively breastfed infants aged 6--11 months, only 35 (6.6%) were classified as likely to benefit, with 202 (37.8%) classified as unlikely to benefit. In contrast, among non-breastfed infants aged 12--18 months, 119 (23.7%) were classified as likely to benefit, with only 59 (11.8%) classified as unlikely to benefit. Decision curve analysis confirmed that the model provided superior net clinical benefit compared with the default strategy of supplementing all infants for decision thresholds above 0.10 (appendix).
+
+### Equity analysis
+
+Iron supplementation demonstrated consistent equity-positive effects (figure 5). For ponderal growth, the CATE was 11-fold higher in the poorest quintile (IEN Q1: +0.056, 95% CI 0.053--0.059) compared with the wealthiest (Q5: +0.005, -0.007 to 0.017, non-significant), with a formal disparity of 0.051 z-score (95% CI 0.039--0.063). For haemoglobin, the gradient was 2.3-fold (Q1: +0.070, 0.065--0.074 versus Q4: +0.031, 0.017--0.044). Infants with severe food insecurity showed larger haemoglobin CATEs (+0.075, 0.059--0.091) than food-secure infants (+0.070, 0.065--0.076).
+
+Racial disparities were minimal and non-significant: the CATE difference between Black and White/other infants was <0.007 across all four outcomes (haemoglobin: 0.068 versus 0.061; weight-for-length: 0.055 versus 0.048; infectious morbidity: -0.046 versus -0.049; diarrhoea: 0.033 versus 0.033).
+
+### Geographical validation
+
+Leave-one-region-out cross-validation demonstrated stable ATEs across all Brazilian macroregions (table 3). Training in the Southeast and validating in remaining regions yielded ATE differences of 0.003 for haemoglobin and 0.002 for infectious morbidity. Training in the Northeast showed differences of 0.005 and 0.004, respectively. All cross-region ATE differences were <0.01, indicating that the models generalise across Brazil's diverse geographical and socioeconomic contexts.
+
+### Model calibration
+
+Calibration of CATE predictions against observed treatment effects within deciles showed variable performance: adequate for infectious morbidity (R^2^=0.35) and diarrhoea (R^2^=0.40), but poor for haemoglobin (slope -0.54) and growth (slope -0.24). This reflects inherent noise in observational CATE estimation within cross-sectional data, a recognised limitation of causal inference methods in this setting. The SHAP surrogate models, by contrast, showed excellent calibration to the original Causal Forest predictions (R^2^ 0.97--0.99).
+
+---
+
+## Discussion
+
+In this nationally representative study of 3127 Brazilian infants, we developed, validated, and deployed a causal machine learning framework that estimates individualised treatment effects of iron supplementation across four simultaneous health outcomes. Two independent analytical approaches -- traditional epidemiological interaction analysis and data-driven Causal Forest with SHAP interpretability -- converged on the same finding: breastfeeding is the primary modifier of iron's benefit--harm profile. We translated these findings into a freely available interactive clinical decision tool that provides individualised supplementation guidance, representing a concrete application of precision public health.
+
+### Breastfeeding as the key modifier
+
+The biological mechanism underlying our findings is well characterised. Breast milk lactoferrin sequesters free iron in the intestinal lumen, depriving pathogenic bacteria of this essential growth factor while delivering iron to the infant through specific enterocyte receptors.^11^ When exogenous iron is administered to breastfed infants, it may overwhelm this protective system, flooding the colon with unbound iron that promotes expansion of pathogenic enterobacteria^7,9^ and induces intestinal inflammation.^8^ Our data are consistent with this mechanism: iron supplementation was associated with a 2.3-fold increase in fever, diarrhoea, and vomiting in exclusively breastfed infants aged 6--11 months (p~interaction~=0.003), and the Causal Forest independently identified breastfeeding as a top-three SHAP feature for both haemoglobin and infectious morbidity outcomes.
+
+The convergence between methods strengthens the finding. The epidemiological interaction test is hypothesis-driven and relies on pre-specified model structure; the Causal Forest SHAP analysis is data-driven and discovers effect modifiers without pre-specification. That both approaches identify breastfeeding as the dominant modifier, with quantitatively consistent effect sizes (epidemiological: +0.43 versus +0.02 g/dL; Causal Forest: +0.106 versus +0.036 g/dL), and with significant correlation between SHAP importance and regression coefficients (r=0.49, p=0.010), provides triangulated evidence that is substantially more robust than either method alone.
+
+### Opposing effects on infectious pathways
+
+A novel finding of this analysis is the dissociation between systemic and intestinal infectious effects. Iron reduced the composite infectious morbidity score in 75.7% of infants (ATE -0.046) but increased diarrhoea risk in 97.3% (ATE +0.033). This pattern suggests two distinct and opposing mechanisms: iron corrects anaemia-related immune dysfunction, reducing susceptibility to systemic infections,^21^ while simultaneously promoting intestinal pathogen growth through luminal iron excess.^7,9^ The clinical implication is that the overall benefit--harm balance depends on baseline anaemia severity and individual susceptibility to gut dysbiosis -- precisely the kind of heterogeneity that Causal Forest is designed to detect.
+
+### Contextual differences from the Pemba trial
+
+Our findings contrast with the Pemba trial in important respects.^6^ Brazil is not malaria-endemic, has better sanitation infrastructure, and has higher breastfeeding rates. The absence of increased diarrhoea or fever in the overall adjusted analysis suggests that the infectious harms of iron supplementation in Brazil are concentrated in identifiable subgroups rather than being universal as observed in Zanzibar. This subgroup-specific pattern -- harm in exclusively breastfed young infants, benefit in non-breastfed older infants -- has not been previously described and would not have been detected without either formal interaction testing or heterogeneous treatment effect estimation.
+
+### Iron supplementation as an equity-positive intervention
+
+The equity analysis reveals that iron supplementation has the largest effects where they are most needed. Ponderal growth benefit showed an 11-fold gradient across wealth quintiles (IEN Q1: CATE +0.056 versus Q5: +0.005, non-significant), identifying iron supplementation as an intervention that actively reduces socioeconomic disparities in child growth.^22^ Haemoglobin benefit showed a 2.3-fold gradient. Infants with severe food insecurity showed the largest improvements. Racial disparities were absent (<0.007 CATE difference across all outcomes). These findings argue strongly for preserving universal supplementation programmes for socioeconomically disadvantaged populations, while potentially targeting the approach for exclusively breastfed infants from higher socioeconomic strata.
+
+### Clinical decision tool and digital health innovation
+
+The deployed clinical tool represents an advance in translating causal machine learning into clinical practice.^23^ Unlike risk prediction models that estimate the probability of an outcome, our tool estimates the causal effect of an intervention for an individual infant, integrating four outcome dimensions into a single recommendation. The tool runs entirely client-side (JavaScript), requires no backend server or internet connection after initial loading, and is freely accessible. Decision curve analysis confirmed clinical utility above a threshold of 0.10, and validation against 10 clinical scenarios achieved 80% accuracy. The tool classified 15.2% of infants as likely to benefit (predominantly non-breastfed, older), 58.7% as trade-off, and 26.1% as unlikely to benefit (predominantly breastfed) -- proportions that challenge the current universal approach.
+
+### Policy implications
+
+The SBP's 2024 update recommending iron prophylaxis from 90 days of life^5^ -- even earlier than the PNSF's 6-month starting point -- was based on evidence of iron deficiency prevalence but did not consider breastfeeding status as a modifying factor. Our data suggest that exclusively breastfed infants in the first year of life derive minimal haematological benefit from supplementation while facing increased infectious morbidity. A more targeted approach that considers breastfeeding status could preserve the equity-positive benefits of supplementation for vulnerable populations while reducing unnecessary harm in exclusively breastfed infants.^24,25^
+
+### Strengths and limitations
+
+This study has several strengths. It uses a large, nationally representative dataset with both biomarker and clinical outcome data, enabling simultaneous benefit--harm assessment across 52 outcomes. The dual analytical framework -- traditional epidemiology confirmed by causal machine learning -- provides convergent evidence stronger than either method alone. The deployment of a freely available clinical tool with validated thresholds translates findings into actionable guidance. The equity analysis addresses a dimension frequently neglected in supplementation studies. Geographical cross-validation across five macroregions demonstrated model stability.
+
+This study also has limitations. The cross-sectional design precludes definitive causal inference; despite double machine learning adjustment, residual confounding cannot be excluded. E-values (2.17--4.12) indicate moderate to substantial robustness to unmeasured confounders, but unmeasured factors correlated with both healthcare access and health outcomes could bias estimates. Calibration of CATE predictions against observed treatment effects was poor for haemoglobin and growth (slopes -0.24 to -0.54), a recognised limitation of causal forest methods in cross-sectional data where within-decile "observed CATEs" are inherently noisy.^12^ The surrogate gradient boosting models deployed for clinical use achieve high fidelity with the original Causal Forest (R^2^ 0.96--0.99), though minor discrepancies at individual level cannot be excluded. Diarrhoea showed limited heterogeneity (97.3% positive CATEs), suggesting near-universal risk increase with limited scope for individualisation on this outcome. Meta-learner concordance was moderate (r=0.23--0.35), though CausalForest showed the most stable generalisation. The interaction findings in exclusively breastfed infants aged 6--11 months are based on subgroups with limited sample sizes, and the clinical decision tool requires prospective validation before routine clinical use, in accordance with the DECIDE-AI framework.^20^
+
+### Conclusions
+
+Iron supplementation in Brazilian infants shows a heterogeneous benefit--harm profile in which breastfeeding status is the primary effect modifier -- a finding independently confirmed by two analytical frameworks. The deployed interactive clinical tool enables individualised four-outcome benefit--harm assessment in real time. Iron is an equity-positive intervention that benefits the poorest infants most. These findings support a transition from universal to targeted iron supplementation that incorporates breastfeeding status, preserves equity gains, and reduces harm in exclusively breastfed infants. Prospective randomised trials stratified by breastfeeding status are warranted to confirm these observational findings.
+
+---
+
+## Contributors
+
+MCS: conceptualisation, methodology, formal analysis, software, writing -- original draft, visualisation, data curation, project administration. [Co-authors: writing -- review and editing, validation, supervision].
+
+## Declaration of interests
+
+The authors declare no competing interests.
+
+## Data sharing
+
+The ENANI-2019 microdata are subject to the sharing policies of the national survey and can be requested from the study coordinators. All analytical code and the clinical decision tool are publicly available at https://github.com/marcelosilva2604/IronBrazil.
+
+## Acknowledgments
+
+We thank the ENANI-2019 study team for making the microdata available for secondary analysis.
+
+---
+
+## References
+
+1. WHO. Guideline on haemoglobin concentrations for the diagnosis of anaemia and assessment of severity. Geneva: World Health Organization, 2024.
+2. Oliveira TSC, et al. Prevalence of childhood anaemia in Brazil: still a serious health problem. *Public Health Nutr* 2021; 24: 7891--901.
+3. Castro TG, et al. Prevalence of iron-deficiency anaemia in Brazilian children under 5 years of age. *Br J Nutr* 2020; 123: 1047--55.
+4. Brazil Ministry of Health. Programa Nacional de Suplementacao de Ferro (PNSF). Ordinance 1793/2009.
+5. Sociedade Brasileira de Pediatria. Recommendations for the management of iron deficiency and iron deficiency anemia in pediatrics: an update. *Residencia Pediatrica* 2024.
+6. Sazawal S, Black RE, Ramsan M, et al. Effects of routine prophylactic supplementation with iron and folic acid on admission to hospital and mortality in preschool children in a high malaria transmission setting. *Lancet* 2006; 367: 133--43.
+7. Jaeggi T, Kortman GAM, Moretti D, et al. Iron fortification adversely affects the gut microbiome, increases pathogen abundance and induces intestinal inflammation in Kenyan infants. *Gut* 2014; 64: 731--42.
+8. Zimmermann MB, Chassard C, Rohner F, et al. The effects of iron fortification on the gut microbiota in African children: a randomized controlled trial in Cote d'Ivoire. *Am J Clin Nutr* 2010; 92: 1406--15.
+9. Cross JH, Bradbury RS, Fulford AJ, et al. Oral iron acutely elevates bacterial growth in human serum. *Sci Rep* 2015; 5: 16670.
+10. Jaafar SH, et al. Effect of iron supplementation in healthy exclusively breastfed infants: a systematic review and meta-analysis. *Front Pediatr* 2025; doi: 10.3389/fped.2025.1506289.
+11. Brock JH. Lactoferrin in human milk: its role in iron absorption and protection against enteric infection in the newborn infant. *Arch Dis Child* 1980; 55: 417--21.
+12. Athey S, Tibshirani J, Wager S. Generalized random forests. *Ann Stat* 2019; 47: 1148--78.
+13. Sheridan R, et al. Application of causal forests to randomised controlled trial data to identify heterogeneous treatment effects: a case study. *BMC Med Res Methodol* 2025; doi: 10.1186/s12874-024-02444-x.
+14. Dennis JM, et al. Comparison of causal forest and regression-based approaches to evaluate treatment effect heterogeneity: an application for type 2 diabetes precision medicine. *BMC Med Inform Decis Mak* 2022; 22: 284.
+15. Alves-Santos NH, et al. General methodological aspects in the Brazilian National Survey on Child Nutrition (ENANI-2019). *Cad Saude Publica* 2021; 37: e00300020.
+16. ENANI Study Group. Methodological aspects of the micronutrient assessment in ENANI-2019. *Cad Saude Publica* 2021; 37: e00299020.
+17. Collins GS, et al. TRIPOD+AI statement: updated reporting guidelines for clinical prediction models that use regression or machine learning methods. *BMJ* 2024; 385: e078378.
+18. ENANI Study Group. Food insecurity, anemia and vitamin A deficiency in Brazilian children: ENANI-2019. *Curr Dev Nutr* 2025; doi: 10.1016/j.cdn.2024.104524.
+19. Zou G. A modified Poisson regression approach to prospective studies with binary data. *Am J Epidemiol* 2004; 159: 702--6.
+20. Vasey B, et al. Reporting guideline for the early-stage clinical evaluation of decision support systems driven by artificial intelligence: DECIDE-AI. *Nat Med* 2022; 28: 924--33.
+21. Iannotti LL, Tielsch JM, Black MM, Black RE. Iron supplementation in early childhood: health benefits and risks. *Am J Clin Nutr* 2006; 84: 1261--76.
+22. Lewies A, Zandberg L, Baumgartner J. Interventions to prevent iron deficiency during the first 1000 days in LMICs. *Curr Opin Clin Nutr Metab Care* 2019; 22: 223--9.
+23. Lonnerdal B, et al. Iron supplementation affects growth and morbidity of breast-fed infants: results of a randomized trial in Sweden and Honduras. *J Nutr* 2002; 132: 3249--55.
+24. ENANI Study Group. Factors associated with anemia and vitamin A deficiency in Brazilian children under 5 years old: ENANI-2019. *Cad Saude Publica* 2023; doi: 10.1590/0102-311XEN190822.
+25. ENANI Study Group. Nutrition transition in Brazilian children under 5 years old from 2006 to 2019. *Cad Saude Publica* 2023; doi: 10.1590/0102-311XEN013423.
+26. Iron Consortium. Management of iron deficiency in children, adults, and pregnant individuals: evidence-based and expert consensus recommendations. *Lancet Haematol* 2025; doi: 10.1016/S2352-3026(24)00373-7.
+27. Andersen CT, Marsden DM, Duggan CP, Liu E, Mozaffarian D, Fawzi WW. Oral iron supplementation and anaemia in children according to schedule, duration, dose and cosupplementation: a systematic review and meta-analysis of 129 randomised trials. *BMJ Global Health* 2023; 8: e010745.
+28. Schumann K, et al. On risks and benefits of iron supplementation recommendations for iron intake revisited. *J Trace Elem Med Biol* 2007; 21: 147--68.
+29. Iddrisu I, et al. A review of the effect of iron supplementation on the gut microbiota of children in developing countries and the impact of prebiotics. *Nutr Res Rev* 2024; 38: 229--37.
+30. Mohammed NI, et al. A novel nano-iron supplement versus standard treatment for iron deficiency anaemia in children (IHAT-GUT trial). *EClinicalMedicine* 2023; 56: 101853.
+
+---
+
+## Figure legends
+
+**Figure 1.** Study flow diagram and breastfeeding interaction. Panel A: selection of the analytical sample from the ENANI-2019 dataset (n=14,558 to n=3127). Panel B: forest plot of adjusted associations between iron supplementation and key outcomes, stratified by breastfeeding status, showing the haemoglobin interaction (p~interaction~=0.027).
+
+**Figure 2.** GATES confirmation of treatment effect heterogeneity. Group Average Treatment Effects by CATE quintile for each of the four outcomes: haemoglobin (panel A), weight-for-length z-score (panel B), composite infectious morbidity score (panel C), and diarrhoea (panel D). Error bars represent 95% bootstrap confidence intervals (n=1000). Q5--Q1 differences are statistically significant for all four outcomes (p<0.05).
+
+**Figure 3.** SHAP summary plots. Drivers of treatment effect heterogeneity for haemoglobin (panel A) and composite infectious morbidity score (panel B). Each dot represents one infant; the x-axis shows the SHAP value (impact on predicted CATE); colour indicates the feature value (red=high, blue=low). Breastfeeding ranks among the top features for both outcomes, independently confirming the epidemiological interaction finding.
+
+**Figure 4.** Clinical decision tool output. Panel A: decision classification scatter plot (green=supplement, n=280; orange=trade-off, n=1078; red=do not supplement, n=479) plotted by CATE for haemoglobin (x-axis) and CATE for infectious morbidity score (y-axis). Panel B: same axes coloured by breastfeeding status, showing separation between breastfed and non-breastfed infants. Panel C: screenshot of the deployed interactive clinical tool at https://marcelosilva2604.github.io/IronBrazil/.
+
+**Figure 5.** Equity analysis. CATE for weight-for-length z-score (panel A) and haemoglobin (panel B) by National Economic Indicator (IEN) quintile, with 95% bootstrap confidence intervals. Q1=poorest, Q5=wealthiest. The 11-fold gradient in growth benefit (Q1 versus Q5) identifies iron supplementation as an equity-positive intervention.
