@@ -46,11 +46,11 @@
     <div class="header">
         <h1>IronBrazil</h1>
         <p>Ferramenta de Decisao sobre Suplementacao de Ferro em Lactentes</p>
-        <div class="badge">Causal Forest + 4 Outcomes | ENANI-2019 (n=3.127)</div>
+        <div class="badge">Causal Forest + 5 Statistically Significant Outcomes | ENANI-2019 (n=3.127)</div>
     </div>
     <div class="container">
         <div class="info-box">
-            Modelo avalia <strong>4 desfechos simultaneamente</strong>: hemoglobina, crescimento, morbidade infecciosa e diarreia. A decisao considera o <strong>balanco beneficio-risco individualizado</strong> de cada crianca.
+            Modelo avalia <strong>5 desfechos estatisticamente significativos</strong>: hemoglobina, ferritina, crescimento (peso/comprimento), morbidade infecciosa e diarreia. Dentre 52 desfechos avaliados, estes 5 apresentaram heterogeneidade confirmada (GATES p&lt;0.05). A decisao considera o <strong>balanco beneficio-risco individualizado</strong> de cada crianca.
         </div>
         <div class="card">
             <h2>Dados da Crianca</h2>
@@ -101,7 +101,7 @@
                 <div class="metric" id="mFer"><div class="value" id="vFer"></div><div class="label">Efeito na Ferritina (ng/mL)</div></div>
             </div>
             <div class="disclaimer">
-                <strong>Aviso:</strong> Ferramenta baseada em Causal Forest (Athey & Imbens 2018) aplicado ao ENANI-2019. Nao substitui avaliacao clinica. Associacoes observacionais, nao causalidade. Validacao prospectiva necessaria.
+                <strong>Aviso:</strong> Ferramenta baseada em Causal Forest (Athey, Tibshirani & Wager 2019) aplicado ao ENANI-2019. Efeitos estimados sob estrategia de identificacao quasi-experimental (PNSF universal). Ferramenta para pesquisa clinica e geracao de hipoteses — nao substitui avaliacao clinica. Validacao prospectiva necessaria antes de uso em decisoes clinicas.
             </div>
         </div>
     </div>
