@@ -1,4 +1,4 @@
-# Estimated heterogeneous effects of iron supplementation on infant health outcomes in Brazil: a quasi-experimental causal machine learning analysis of a nationally representative survey with deployment of an interactive clinical decision tool
+# Heterogeneous effects of iron supplementation in Brazilian infants: a quasi-experimental causal machine learning study with clinical tool deployment
 
 Marcelo Carvalho e Silva^a,b*^, [co-authors]^c^
 
