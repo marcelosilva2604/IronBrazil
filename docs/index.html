@@ -98,6 +98,7 @@
                 <div class="metric" id="mWfl"><div class="value" id="vWfl"></div><div class="label">Efeito no Crescimento (z-score)</div></div>
                 <div class="metric" id="mInf"><div class="value" id="vInf"></div><div class="label">Risco Infeccioso (variacao %)</div></div>
                 <div class="metric" id="mDia"><div class="value" id="vDia"></div><div class="label">Risco de Diarreia (variacao %)</div></div>
+                <div class="metric" id="mFer"><div class="value" id="vFer"></div><div class="label">Efeito na Ferritina (ng/mL)</div></div>
             </div>
             <div class="disclaimer">
                 <strong>Aviso:</strong> Ferramenta baseada em Causal Forest (Athey & Imbens 2018) aplicado ao ENANI-2019. Nao substitui avaliacao clinica. Associacoes observacionais, nao causalidade. Validacao prospectiva necessaria.
@@ -106,12 +107,13 @@
     </div>
     <div class="footer">
         <p>IronBrazil &mdash; Carvalho e Silva et al. (2026)</p>
-        <p>ENANI-2019 | Causal Forest | 4 Outcomes | <a href="https://github.com/marcelosilva2604/IronBrazil">GitHub</a></p>
+        <p>ENANI-2019 | Causal Forest | 5 Outcomes | <a href="https://github.com/marcelosilva2604/IronBrazil">GitHub</a></p>
     </div>
     <script src="model_hb.js"></script>
     <script src="model_anthro_zwfl.js"></script>
     <script src="model_infection_score.js"></script>
     <script src="model_diarreia.js"></script>
+    <script src="model_ferritin.js"></script>
     <script>
         function getInput() {
             const race = document.getElementById('race').value;
@@ -174,19 +176,21 @@
             const wfl = score_anthro_zwfl(input);
             const inf = score_infection_score(input);
             const dia = score_diarreia(input);
+            const fer = score_ferritin(input);
             const infectionRisk = (inf > 0.05) || (dia > 0.018);
             const hbBenefit = hb > 0.05;
+            const ferritinBenefit = fer > 2.0;
             const growthHarm = wfl < -0.05;
             let decision, desc, cls;
-            if (hbBenefit && !infectionRisk && !growthHarm) {
+            if ((hbBenefit || ferritinBenefit) && !infectionRisk && !growthHarm) {
                 decision = 'SUPLEMENTAR'; cls = 'suplementar';
-                desc = 'O modelo estima beneficio hematologico sem aumento relevante de risco infeccioso ou prejuizo ao crescimento.';
-            } else if (hbBenefit && (infectionRisk || growthHarm)) {
+                desc = 'O modelo estima beneficio hematologico e/ou nos estoques de ferro sem aumento relevante de risco infeccioso ou prejuizo ao crescimento.';
+            } else if ((hbBenefit || ferritinBenefit) && (infectionRisk || growthHarm)) {
                 decision = 'TRADE-OFF (avaliar caso a caso)'; cls = 'tradeoff';
-                desc = 'Ha beneficio na hemoglobina, mas com risco de aumento de diarreia ou prejuizo ao crescimento. Avaliar com exames laboratoriais.';
+                desc = 'Ha beneficio na hemoglobina ou ferritina, mas com risco de aumento de diarreia ou prejuizo ao crescimento. Avaliar com exames laboratoriais.';
             } else {
                 decision = 'CONSIDERAR NAO SUPLEMENTAR'; cls = 'nao';
-                desc = 'Beneficio hematologico minimo ou ausente. Considerar manter aleitamento materno e reavaliar.';
+                desc = 'Beneficio hematologico e de estoques de ferro minimo ou ausente. Considerar manter aleitamento materno e reavaliar.';
             }
             document.getElementById('resultTitle').textContent = decision;
             document.getElementById('resultDesc').textContent = desc;
@@ -209,6 +213,7 @@
             setMetric('mWfl', wfl, 'abs', false);
             setMetric('mInf', inf, 'pct', true);
             setMetric('mDia', dia, 'pct', true);
+            setMetric('mFer', fer, 'abs', false);
             document.getElementById('result').classList.add('show');
             document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
         }

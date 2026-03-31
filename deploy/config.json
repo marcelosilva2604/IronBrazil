@@ -73,6 +73,10 @@
     "diarreia": {
       "name": "Diarreia 15 dias",
       "direction": "harm"
+    },
+    "ferritin": {
+      "name": "Ferritina (ng/mL)",
+      "direction": "benefit"
     }
   }
 }
