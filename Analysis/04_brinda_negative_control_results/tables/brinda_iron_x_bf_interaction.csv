@@ -1,0 +1,2 @@
+Outcome,Interaction coef (log-PR),CI 95% (analytical),p (analytical),CI 95% (bootstrap),p (bootstrap),N
+Iron deficiency (BRINDA-corrected),-0.05118657602121765,"[-0.2976, +0.1952]",0.683879458977865,"[-0.2962, +0.1943]",0.69,2656

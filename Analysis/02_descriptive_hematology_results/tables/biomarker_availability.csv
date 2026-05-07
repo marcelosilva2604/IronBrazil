@@ -1,0 +1,12 @@
+Biomarker,N (total),N (unexposed),N (exposed)
+Haemoglobin (g/dL),2788,1983,805
+Ferritin (ng/mL),2728,1929,799
+Haematocrit (%),2788,1983,805
+MCV (fL),2788,1983,805
+MCH (pg),2788,1983,805
+MCHC (g/dL),2788,1983,805
+RDW (%),2785,1982,803
+C-reactive protein (mg/L),2756,1964,792
+Anaemia (Hb < 10.5 g/dL),2788,1983,805
+Iron deficiency (ferritin < 12 ng/mL),2728,1929,799
+Elevated CRP (> 5 mg/L),2756,1964,792

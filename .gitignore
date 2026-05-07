@@ -1,0 +1,26 @@
+# Virtual environment
+.venv/
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Data files (third-party microdata; obtain from ENANI-2019 portal)
+Data/
+
+# Manuscript-side artefacts (not for version control)
+Manuscript/
+*bjn Articles/
+**/*bjn Articles/**
+referencias/
+NARRATIVE.md
+
+# OS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/

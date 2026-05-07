@@ -1,0 +1,2 @@
+Outcome,Measure,Estimate,CI 95% (analytical),p (analytical),CI 95% (bootstrap),p (bootstrap),N,Events
+Accidental hospitalisation (negative control),PR,0.9558139428055826,"[0.386, 2.370]",0.9222858656095098,"[0.261, 2.271]",0.894,4601,22
